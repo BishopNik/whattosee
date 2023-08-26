@@ -1,21 +1,20 @@
+/** @format */
+
 import axios from 'axios';
 
-const URL = 'https://pixabay.com/api/';
-const apiKey = '38681482-0dec064188143fb82389b90e0';
+const URL = 'https://api.themoviedb.org/3/search/movie';
+const apiKey = '345007f9ab440e5b86cef51be6397df1';
 
-async function fetchImage({ page = 1, perPage = 10, searchItem = '' }) {
-  const params = {
-    key: apiKey,
-    image_type: 'photo',
-    orientation: 'horizontal',
-    pretty: 'true',
-    safesearch: 'true',
-    page: page,
-    per_page: perPage,
-    q: searchItem,
-  };
-  const response = await axios.get(URL, { params });
-  return response.data;
+async function fetchFilmsItems({ page = 1, searchItem = '', include_adult = false }) {
+	const params = {
+		api_key: apiKey,
+		include_adult: include_adult,
+		language: 'ru-RU',
+		page: page,
+		query: searchItem,
+	};
+	const response = await axios.get(URL, { params });
+	return response.data;
 }
 
-export { fetchImage };
+export { fetchFilmsItems, apiKey };
