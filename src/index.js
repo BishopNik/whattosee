@@ -116,10 +116,9 @@ function markupImg(data) {
 				release_date,
 				vote_average,
 			}) => {
-				poster_path
-					? (path = `https://image.tmdb.org/t/p/w500${poster_path}?api_key=${apiKey}`)
-					: (path =
-							'https://cojo.ru/wp-content/uploads/2022/12/neoklassika-kinomuzyka.-neorchestra-1.webp');
+				const path = poster_path
+					? `https://image.tmdb.org/t/p/w500${poster_path}?api_key=${apiKey}`
+					: 'https://cojo.ru/wp-content/uploads/2022/12/neoklassika-kinomuzyka.-neorchestra-1.webp';
 				return `<li class="film-card" data-original_language="${original_language}" data-original_title="${original_title}" data-overview="${overview}" data-release_date=${release_date} data-vote_average="${vote_average}">
 					<div class="img">
 						<img src="${path}" alt="${title}" loading="lazy" width="100%" />
