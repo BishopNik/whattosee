@@ -23,6 +23,7 @@ const paramFetch = {
 ref.searchForm.addEventListener('submit', onSearchClickBtn);
 ref.btnLoadmore.addEventListener('click', onClickLoadmore);
 ref.modalWindow.addEventListener('click', onClose);
+ref.gallery.addEventListener('click', createFullDescription);
 
 function onSearchClickBtn(e) {
 	e.preventDefault();
@@ -148,17 +149,24 @@ function resetParamNewSearch() {
 }
 
 function createCardClickFunction() {
-	const filmCards = document.querySelectorAll('.film-card');
-	for (const filmCard of filmCards) {
-		filmCard.addEventListener('click', createFullDescription);
-	}
+	// const filmCards = document.querySelectorAll('.film-card');
+	// for (const filmCard of filmCards) {
+	// 	filmCard.addEventListener('click', createFullDescription);
+	// }
 }
 
-function createFullDescription({ currentTarget }) {
+function createFullDescription(e) {
+	e.preventDefault();
+	const { target, currentTarget } = e;
+	if (!target.closest('li.film-card')) {
+		return;
+	}
+	window.addEventListener('keydown', onClickEsc);
+	const currentFilm = target.closest('li.film-card');
 	ref.modalWindow.classList.remove('is-hidden');
 	const { original_language, original_title, overview, release_date, vote_average } =
-		currentTarget.dataset;
-	const imgElement = currentTarget.querySelector('img');
+		currentFilm.dataset;
+	const imgElement = currentFilm.querySelector('img');
 	const srcValue = imgElement
 		? imgElement.getAttribute('src')
 		: 'https://cojo.ru/wp-content/uploads/2022/12/neoklassika-kinomuzyka.-neorchestra-1.webp';
@@ -189,6 +197,20 @@ function createFullDescription({ currentTarget }) {
 
 function onClose(e) {
 	if (e.target === e.currentTarget) {
-		ref.modalWindow.classList.add('is-hidden');
+		hiddenModal();
 	}
+}
+
+function onClickEsc(e) {
+	const ESCAPE = 'Escape';
+	const keyClicked = e.code;
+
+	if (keyClicked === ESCAPE) {
+		hiddenModal();
+	}
+}
+
+function hiddenModal() {
+	ref.modalWindow.classList.add('is-hidden');
+	window.removeEventListener('keydown', onClickEsc);
 }
