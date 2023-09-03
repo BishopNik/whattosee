@@ -18,6 +18,7 @@ const paramFetch = {
 	page: 1,
 	countFoundItem: 0,
 	totalPage: 0,
+	include_adult: true,
 };
 
 ref.searchForm.addEventListener('submit', onSearchClickBtn);
