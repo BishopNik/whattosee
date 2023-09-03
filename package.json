@@ -2,20 +2,20 @@
 	"name": "goit-js-hw-11",
 	"version": "2.0.0",
 	"description": "",
-	"homepage": "https://bishopnik.github.io/WhatToSee",
+	"homepage": "https://bishopnik.github.io/whattosee",
 	"scripts": {
 		"start": "parcel src/*.html",
-		"build": "parcel build src/*.html --public-url /WhatToSee/"
+		"build": "parcel build src/*.html --public-url /whattosee/"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/BishopNik/WhatToSee.git"
+		"url": "git+https://github.com/BishopNik/whattosee.git"
 	},
 	"keywords": [],
 	"author": "Andrey Nikanorov <a.nikanorov@gmail.com>",
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/BishopNik/WhatToSee/issues"
+		"url": "https://github.com/BishopNik/whattosee/issues"
 	},
 	"dependencies": {
 		"axios": "^1.4.0",
