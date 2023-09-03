@@ -2,14 +2,15 @@
 
 import { Notify, Loading } from 'notiflix';
 import 'bootstrap/dist/css/bootstrap.min.css';
-var throttle = require('lodash.throttle');
 import { fetchFilmsItems, apiKey } from './fetch_api.js';
 
 const ref = {
 	gallery: document.querySelector('.gallery'),
-	searchForm: document.querySelector('.search-form'),
+	searchForm: document.querySelector('#search-form'),
 	btnLoadmore: document.querySelector('.load-more'),
 	scrollbar: document.querySelector('.scrollbar'),
+	modalWindow: document.querySelector('.modal_window'),
+	searchBlock: document.querySelector('#block'),
 };
 
 const paramFetch = {
@@ -18,13 +19,10 @@ const paramFetch = {
 	countFoundItem: 0,
 	totalPage: 0,
 };
-const windowHeight = document.documentElement.clientHeight - 85;
-let loadStatus = true;
-let memScrollY = window.pageYOffset;
 
 ref.searchForm.addEventListener('submit', onSearchClickBtn);
 ref.btnLoadmore.addEventListener('click', onClickLoadmore);
-window.addEventListener('scroll', throttle(onScrollLoadMore, 300));
+ref.modalWindow.addEventListener('click', onClose);
 
 function onSearchClickBtn(e) {
 	e.preventDefault();
@@ -50,7 +48,7 @@ function markupFetchSearchItem() {
 			paramFetch.totalPage = res.pages;
 
 			if (paramFetch.countFoundItem) {
-				Notify.success(`Hooray! We found ${paramFetch.countFoundItem} images.`);
+				Notify.success(`Hooray! We found ${paramFetch.countFoundItem} films.`);
 				updatePage(res);
 			} else {
 				Notify.info('Nothing was found according to your request.');
@@ -61,7 +59,6 @@ function markupFetchSearchItem() {
 		})
 		.finally(() => {
 			Loading.remove(250);
-			loadStatus = false;
 		});
 }
 
@@ -81,7 +78,6 @@ function onClickLoadmore() {
 		})
 		.finally(() => {
 			Loading.remove(350);
-			loadStatus = false;
 		});
 }
 
@@ -90,35 +86,12 @@ function updatePage(res) {
 	if (paramFetch.totalPage < paramFetch.page) {
 		ref.btnLoadmore.classList.add('is-hidden');
 	} else {
+		ref.searchBlock.classList.replace('search_block', 'search_block_run');
+		ref.searchForm.classList.replace('search-form', 'search-form_run');
 		ref.btnLoadmore.classList.remove('is-hidden');
 	}
-
 	ref.gallery.insertAdjacentHTML('beforeend', markupImg(res.results));
-}
-
-function onScrollLoadMore() {
-	const btnHeigth = !ref.radioBtn.checked ? 115 : 0;
-	const galleryPosHeigth = ref.gallery.offsetHeight - 85;
-	const currentScrollY = window.pageYOffset;
-	const statusBar = (currentScrollY / (galleryPosHeigth - windowHeight + btnHeigth)) * 100;
-
-	ref.scrollbar.style.width = `${statusBar}vw`;
-
-	if (!ref.radioBtn.checked) {
-		return;
-	}
-
-	const countPage = Math.ceil(paramFetch.countFoundItem / paramFetch.perPage);
-	if (
-		pageYOffset > galleryPosHeigth - windowHeight &&
-		loadStatus === false &&
-		memScrollY < currentScrollY &&
-		countPage >= paramFetch.page
-	) {
-		memScrollY = window.pageYOffset;
-		loadStatus = true;
-		onClickLoadmore();
-	}
+	createCardClickFunction();
 }
 
 function scrollWindow() {
@@ -132,18 +105,34 @@ function scrollWindow() {
 function markupImg(data) {
 	return data
 		.map(
-			({ poster_path, vote_average, title }) =>
-				`<li class="film-card">
-                <img src="https://image.tmdb.org/t/p/w500${poster_path}?api_key=${apiKey}" alt="${title}" loading="lazy" width = "100%" />
-            	<div class="info">
-                <p class="info-item">
-                ${title}
-                </p>
-                <p class="info-item">
-                ${vote_average}
-                </p>
-            </div>             
-        </li>`
+			({
+				poster_path,
+				title,
+				original_language,
+				original_title,
+				overview,
+				release_date,
+				vote_average,
+			}) => {
+				poster_path
+					? (path = `https://image.tmdb.org/t/p/w500${poster_path}?api_key=${apiKey}`)
+					: (path =
+							'https://cojo.ru/wp-content/uploads/2022/12/neoklassika-kinomuzyka.-neorchestra-1.webp');
+				return `<li class="film-card" data-original_language="${original_language}" data-original_title="${original_title}" data-overview="${overview}" data-release_date=${release_date} data-vote_average="${vote_average}">
+					<div class="img">
+						<img src="${path}" alt="${title}" loading="lazy" width="100%" />
+					</div>                	
+            		<div class="info">
+						<p class="info-item">
+						${title}
+						</p>
+						<p class="info-item">
+						<span>Рейтинг зрителей</span>
+						<span>${vote_average}</span>
+						</p>
+            	</div>             
+        		</li>`;
+			}
 		)
 		.join('');
 }
@@ -152,7 +141,54 @@ function resetParamNewSearch() {
 	ref.gallery.innerHTML = '';
 	paramFetch.page = 1;
 	paramFetch.countFoundItem = 0;
-	memScrollY = window.pageYOffset;
-	ref.scrollbar.style.width = `0vw`;
 	ref.btnLoadmore.classList.add('is-hidden');
+	ref.modalWindow.classList.add('is-hidden');
+	ref.searchBlock.classList.replace('search_block_run', 'search_block');
+	ref.searchForm.classList.replace('search-form_run', 'search-form');
+}
+
+function createCardClickFunction() {
+	const filmCards = document.querySelectorAll('.film-card');
+	for (const filmCard of filmCards) {
+		filmCard.addEventListener('click', createFullDescription);
+	}
+}
+
+function createFullDescription({ currentTarget }) {
+	ref.modalWindow.classList.remove('is-hidden');
+	const { original_language, original_title, overview, release_date, vote_average } =
+		currentTarget.dataset;
+	const imgElement = currentTarget.querySelector('img');
+	const srcValue = imgElement
+		? imgElement.getAttribute('src')
+		: 'https://cojo.ru/wp-content/uploads/2022/12/neoklassika-kinomuzyka.-neorchestra-1.webp';
+	const modalContent = `<div class="window">
+		<img src="${srcValue}" alt="${original_title}"/>
+		<ul class="film_data">
+				<li>
+					Название в оригинале: <span class="film_tag">${original_title}</span>
+					
+				</li>
+				<li>
+					Язык оригинала: <span class="film_tag">${original_language}</span>
+				</li>
+				<li>
+					Дата выпуска: <span class="film_tag">${release_date}</span>
+					
+				</li>
+				<li>
+					Рейтинг зрителей: <span class="film_tag">${vote_average}</span>
+				</li>
+				<li>
+					Описание фильма: <span class="film_tag">${overview}</span>				
+				</li>
+		</ul>	
+	</div>`;
+	return (ref.modalWindow.innerHTML = modalContent);
+}
+
+function onClose(e) {
+	if (e.target === e.currentTarget) {
+		ref.modalWindow.classList.add('is-hidden');
+	}
 }

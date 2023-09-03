@@ -1,23 +1,58 @@
 /** @format */
 
-.search-form {
+.search_block_run {
 	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 4em;
+	z-index: 999;
+	background-color: rgba(39, 152, 205, 0.55);
+}
+
+.search_block {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-image: linear-gradient(to bottom, rgba(46, 47, 66, 0.4), rgba(46, 47, 66, 0.3)),
+		url(https://img.freepik.com/free-vector/online-cinema-banner-with-open-clapper-board-and-film-strip_1419-2242.jpg?w=1800&t=st=1693749600~exp=1693750200~hmac=be19cf22ef75b280460c4f6e1e2824b627f6d22a33f9ddc707dcab31325f6dfe);
+	background-repeat: no-repeat;
+	background-size: cover;
+	width: 80vw;
+	height: 60vh;
+	z-index: 999;
+}
+
+.search-form {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	transform: translateY(-50%);
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	gap: 35px;
-	margin-bottom: 30px;
 	padding: 16px 0;
-	width: 100vw;
-	background-color: rgba(205, 39, 114, 0.886);
-	z-index: 999;
+	width: 100%;
+	background-color: transparent;
+	/* background-color: rgba(39, 152, 205, 0.55); */
 }
 
-.search-form > input {
-	margin-left: 20px;
-	padding-left: 10px;
+.search-form_run {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 35px;
+	padding: 0.6vw 0;
+	width: 100%;
+	background-color: transparent;
+}
+
+.search-input {
+	padding-left: 20px;
 	width: 450px;
-	height: 35px;
+	height: 55px;
 	font-size: 18px;
 	border-radius: 5px;
 	border: none;
@@ -25,25 +60,23 @@
 	color: darkslategrey;
 }
 
-.search-form > button {
+.search {
+	box-sizing: border-box;
 	margin-left: 20px;
-	padding: 7px;
 	width: 100px;
-	border-radius: 5px;
+	height: 55px;
+	border-radius: 7px;
 	cursor: pointer;
 	font-size: 18px;
 	font-weight: 500;
 	color: antiquewhite;
-	background-color: rgb(17, 102, 133);
+	background-color: rgb(222, 165, 58);
 	transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1);
 	box-shadow: 3px 2px 5px 0px rgba(164, 94, 53, 0.75);
 }
 
-.search-form > button:hover {
+.search:hover {
 	color: chartreuse;
-	background-color: rgb(24, 132, 171);
-	transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1),
-		background-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .button-cont {
@@ -60,7 +93,7 @@
 	border-radius: 5px;
 	font-size: 18px;
 	color: antiquewhite;
-	background-color: rgb(17, 102, 133);
+	background-color: rgba(21, 126, 164, 0.75);
 	transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1),
 		background-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
 	box-shadow: 3px 2px 5px 0px rgba(164, 94, 53, 0.75);
@@ -80,47 +113,107 @@
 .gallery {
 	display: flex;
 	justify-content: space-evenly;
-	gap: 25px;
+	column-gap: 25px;
+	row-gap: 35px;
 	flex-wrap: wrap;
+	padding: 0;
 	padding-top: 105px;
 	align-items: center;
+	margin: 0;
 }
 
 .film-card {
 	display: flex;
-	gap: 5px;
 	flex-direction: column;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
+	justify-content: center;
+	width: 320px;
 	outline: 1px solid black;
-	border-radius: 4px;
+	border-radius: 6px;
 	overflow: hidden;
-	box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
-		0px 2px 1px -1px rgba(0, 0, 0, 0.12);
-	width: 640px;
+	box-shadow: 0px 0px 8px 4px rgba(0, 0, 0, 0.2);
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.film-card:hover {
+	scale: 1.1;
 }
 
 .info {
 	display: flex;
-	width: 100%;
-	justify-content: center;
-	gap: 15px;
+	height: 75px;
+	justify-content: space-evenly;
+	align-items: center;
 	flex-wrap: nowrap;
-	font-size: 19px;
+	padding: 8px;
+	font-size: 16px;
+	font-weight: 500;
+	background-color: rgb(250, 243, 230);
 }
 
 .info-item {
 	display: flex;
+	flex-wrap: wrap;
 	flex-direction: column;
-	justify-content: center;
 	align-items: center;
+	justify-content: center;
+	margin: 0;
+	text-align: center;
+	overflow: hidden;
+	width: 152px;
+	height: 55px;
+	line-height: 1;
 }
 
-.scrollbar {
+.info-item > span {
+	font-size: 12px;
+	text-align: center;
+	width: 140px;
+	line-height: 1.3;
+}
+
+.img > img {
+	object-fit: cover;
+	height: 420px;
+}
+
+.modal_window {
 	position: fixed;
-	width: 0vw;
-	height: 20px;
-	background-color: orange;
-	margin-top: 78px;
-	z-index: 998;
-	border-radius: 8px;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.window {
+	display: flex;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 6%;
+	width: 70%;
+	height: 80%;
+	background-color: rgb(252, 250, 242);
+	box-shadow: 0px 0px 16px 10px rgba(0, 0, 0, 0.4);
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.window > img {
+	max-width: 500px;
+	object-fit: cover;
+}
+
+.film_data {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	list-style: none;
+	padding: 30px 50px;
+	font-size: 18px;
+	color: rgba(0, 0, 0, 0.8);
+}
+
+.film_tag {
+	font-weight: 600;
 }
