@@ -215,8 +215,13 @@ function createFullDescription(e) {
 	window.addEventListener('keydown', onClickEsc);
 	const currentFilm = target.closest('li.film-card');
 	ref.modalWindow.classList.remove('is-hidden');
-	const { original_language, original_title, overview, release_date, vote_average } =
-		currentFilm.dataset;
+	const {
+		original_language = 'xx',
+		original_title = 'Good film!',
+		overview = '',
+		release_date = 'xxxx-xx-xx',
+		vote_average = '0',
+	} = currentFilm.dataset;
 	const imgElement = currentFilm.querySelector('img');
 	const srcValue = imgElement
 		? imgElement.getAttribute('src')
