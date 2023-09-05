@@ -21,6 +21,8 @@
 	background-size: cover;
 	width: 80vw;
 	height: 60vh;
+	border-radius: 10px;
+	overflow: hidden;
 	z-index: 999;
 }
 
@@ -48,12 +50,25 @@
 	background-color: transparent;
 }
 
+.select-box {
+	margin-right: 20px;
+	min-width: 75px;
+	height: 55px;
+	border-radius: 6px;
+	padding: 5px 10px 5px 14px;
+	color: rgb(86, 33, 33);
+	background-color: rgba(255, 190, 92, 0.9);
+	font-weight: 600;
+	outline: none;
+	border: none;
+}
+
 .search-input {
 	padding-left: 20px;
 	width: 450px;
 	height: 55px;
 	font-size: 18px;
-	border-radius: 5px;
+	border-radius: 6px;
 	border: none;
 	outline: none;
 	color: darkslategrey;
@@ -69,7 +84,7 @@
 	font-size: 18px;
 	font-weight: 500;
 	color: antiquewhite;
-	background-color: rgb(222, 165, 58);
+	background-color: rgb(234, 162, 53);
 	transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1);
 	box-shadow: 3px 2px 5px 0px rgba(164, 94, 53, 0.75);
 }
@@ -81,18 +96,19 @@
 .button-cont {
 	display: flex;
 	justify-content: center;
+	margin-bottom: 50px;
 }
 
 .load-more {
 	margin-top: 35px;
-	min-width: 130px;
+	min-width: 150px;
 	height: 40px;
 	font-size: 16px;
 	margin-bottom: 40px;
 	border-radius: 5px;
 	font-size: 18px;
 	color: antiquewhite;
-	background-color: rgba(21, 126, 164, 0.75);
+	background-color: rgba(33, 130, 233, 0.75);
 	transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1),
 		background-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
 	box-shadow: 3px 2px 5px 0px rgba(164, 94, 53, 0.75);
@@ -100,7 +116,7 @@
 
 .load-more:hover {
 	color: chartreuse;
-	background-color: rgb(24, 132, 171);
+	background-color: rgb(51, 147, 244);
 	transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1),
 		background-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }

@@ -12,6 +12,15 @@
 	<body>
 		<div id="block" class="search_block">
 			<form id="search-form" class="search-form">
+				<select id="lang" class="select-box">
+					<option value="en-US">ENG</option>
+					<option value="ru-RU" selected>РУС</option>
+					<option value="pl-PL">PL</option>
+				</select>
+				<select id="age" class="select-box">
+					<option value="true">18+</option>
+					<option value="false"><18</option>
+				</select>
 				<input
 					class="search-input"
 					type="text"
@@ -19,12 +28,12 @@
 					autocomplete="off"
 					placeholder="Поиск фильмов"
 				/>
-				<button type="submit" class="search">Поиск</button>
+				<button type="submit" class="search" name="searchButton">Поиск</button>
 			</form>
 		</div>
 		<ul class="gallery"></ul>
 		<div class="button-cont">
-			<button type="button" class="load-more is-hidden">Load more</button>
+			<button type="button" class="load-more is-hidden" name="loadMore">Искать еще...</button>
 		</div>
 		<div class="modal_window isHidden"></div>
 	</body>

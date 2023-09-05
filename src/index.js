@@ -3,61 +3,111 @@
 import { Notify, Loading } from 'notiflix';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { fetchFilmsItems, apiKey } from './fetch_api.js';
+import { langInterface } from './lang.js';
 
 const ref = {
 	gallery: document.querySelector('.gallery'),
 	searchForm: document.querySelector('#search-form'),
 	btnLoadmore: document.querySelector('.load-more'),
-	scrollbar: document.querySelector('.scrollbar'),
 	modalWindow: document.querySelector('.modal_window'),
 	searchBlock: document.querySelector('#block'),
+	langSelect: document.querySelector('#lang'),
+	ageSelect: document.querySelector('#age'),
 };
 
-const paramFetch = {
+export const paramFetch = {
 	searchItem: '',
 	page: 1,
 	countFoundItem: 0,
 	totalPage: 0,
 	include_adult: true,
+	lang: 'ru-RU',
 };
+
+const messages = [
+	{
+		warning: 'Search bar is empty.',
+		info: 'Nothing was found according to your request.',
+		failure: 'Unable to load results. ',
+		infoEnd: "We're sorry, but you've reached the end of search results.",
+		success() {
+			return `Hooray! We found ${paramFetch.countFoundItem} films.`;
+		},
+	},
+	{
+		warning: 'Поле поиска пусто.',
+		info: 'По вашему запросу ничего не найдено.',
+		failure: 'Не удалось загрузить результаты. ',
+		infoEnd: 'Извините, но вы достигли конца результатов поиска.',
+		success() {
+			return `Ура! Мы нашли ${paramFetch.countFoundItem} фильмов.`;
+		},
+	},
+	{
+		warning: 'Pole wyszukiwania jest puste.',
+		info: 'Nie znaleziono niczego zgodnego z Twoim zapytaniem.',
+		failure: 'Nie można załadować wyników. ',
+		infoEnd: 'Przepraszamy, ale osiągnąłeś koniec wyników wyszukiwania.',
+		success() {
+			return `Hurra! Znaleźliśmy ${paramFetch.countFoundItem} filmów.`;
+		},
+	},
+];
+
+let langIndex = 0;
 
 ref.searchForm.addEventListener('submit', onSearchClickBtn);
 ref.btnLoadmore.addEventListener('click', onClickLoadmore);
 ref.modalWindow.addEventListener('click', onClose);
 ref.gallery.addEventListener('click', createFullDescription);
+ref.langSelect.addEventListener('change', onChange);
+
+localizationPage(ref.langSelect.value);
 
 function onSearchClickBtn(e) {
 	e.preventDefault();
 
 	resetParamNewSearch();
 
-	paramFetch.searchItem = e.target.searchQuery.value;
+	const { warning } = messages[langIndex];
+
+	paramFetch.lang = ref.langSelect.value;
+	paramFetch.include_adult = ref.ageSelect.value;
+
+	ref.searchForm.searchQuery.value
+		? (paramFetch.searchItem = ref.searchForm.searchQuery.value)
+		: null;
 	if (!paramFetch.searchItem) {
-		Notify.warning('Search bar is empty.');
+		Notify.warning(warning);
 		return;
 	}
 
 	markupFetchSearchItem(paramFetch);
 
-	e.target.searchQuery.value = '';
+	ref.searchForm.searchQuery.value = '';
 }
 
-function markupFetchSearchItem() {
+function markupFetchSearchItem(paramFetch) {
 	Loading.dots();
+
 	fetchFilmsItems(paramFetch)
 		.then(res => {
 			paramFetch.countFoundItem = res.total_results;
-			paramFetch.totalPage = res.pages;
+			paramFetch.totalPage = res.total_pages;
+			const { success, info } = messages[langIndex];
+			const mes = success();
 
 			if (paramFetch.countFoundItem) {
-				Notify.success(`Hooray! We found ${paramFetch.countFoundItem} films.`);
+				Notify.success(mes);
 				updatePage(res);
 			} else {
-				Notify.info('Nothing was found according to your request.');
+				resetParamNewSearch();
+				Notify.info(info);
 			}
 		})
 		.catch(error => {
-			Notify.failure('Unable to load results. ' + error.message);
+			const { failure } = messages[langIndex];
+			Notify.failure(`${failure}${error.message}`);
 		})
 		.finally(() => {
 			Loading.remove(250);
@@ -66,17 +116,18 @@ function markupFetchSearchItem() {
 
 function onClickLoadmore() {
 	Loading.dots();
+	const { infoEnd, failure } = messages[langIndex];
 	fetchFilmsItems(paramFetch)
 		.then(res => {
 			if (paramFetch.totalPage <= paramFetch.page) {
 				ref.btnLoadmore.classList.add('is-hidden');
-				Notify.info("We're sorry, but you've reached the end of search results.");
+				Notify.info(infoEnd);
 			}
 			updatePage(res);
 			scrollWindow();
 		})
 		.catch(error => {
-			Notify.failure('Unable to load results.');
+			Notify.failure(failure);
 		})
 		.finally(() => {
 			Loading.remove(350);
@@ -88,12 +139,11 @@ function updatePage(res) {
 	if (paramFetch.totalPage < paramFetch.page) {
 		ref.btnLoadmore.classList.add('is-hidden');
 	} else {
-		ref.searchBlock.classList.replace('search_block', 'search_block_run');
-		ref.searchForm.classList.replace('search-form', 'search-form_run');
 		ref.btnLoadmore.classList.remove('is-hidden');
 	}
+	ref.searchBlock.classList.replace('search_block', 'search_block_run');
+	ref.searchForm.classList.replace('search-form', 'search-form_run');
 	ref.gallery.insertAdjacentHTML('beforeend', markupImg(res.results));
-	createCardClickFunction();
 }
 
 function scrollWindow() {
@@ -105,6 +155,7 @@ function scrollWindow() {
 }
 
 function markupImg(data) {
+	const { rating } = langInterface[langIndex];
 	return data
 		.map(
 			({
@@ -128,7 +179,7 @@ function markupImg(data) {
 						${title}
 						</p>
 						<p class="info-item">
-						<span>Рейтинг зрителей</span>
+						<span>${rating}</span>
 						<span>${vote_average}</span>
 						</p>
             	</div>             
@@ -140,24 +191,24 @@ function markupImg(data) {
 
 function resetParamNewSearch() {
 	ref.gallery.innerHTML = '';
-	paramFetch.page = 1;
-	paramFetch.countFoundItem = 0;
 	ref.btnLoadmore.classList.add('is-hidden');
 	ref.modalWindow.classList.add('is-hidden');
-	ref.searchBlock.classList.replace('search_block_run', 'search_block');
-	ref.searchForm.classList.replace('search-form_run', 'search-form');
-}
-
-function createCardClickFunction() {
-	// const filmCards = document.querySelectorAll('.film-card');
-	// for (const filmCard of filmCards) {
-	// 	filmCard.addEventListener('click', createFullDescription);
-	// }
+	!paramFetch.totalPage
+		? ref.searchBlock.classList.replace('search_block_run', 'search_block')
+		: null;
+	!paramFetch.totalPage
+		? ref.searchForm.classList.replace('search-form_run', 'search-form')
+		: null;
+	paramFetch.page = 1;
+	paramFetch.countFoundItem = 0;
+	paramFetch.totalPage = 0;
 }
 
 function createFullDescription(e) {
 	e.preventDefault();
-	const { target, currentTarget } = e;
+	const { target } = e;
+	const { titleFilms, originalLanguage, releaseDate, rating, overviewCount } =
+		langInterface[langIndex];
 	if (!target.closest('li.film-card')) {
 		return;
 	}
@@ -174,21 +225,19 @@ function createFullDescription(e) {
 		<img src="${srcValue}" alt="${original_title}"/>
 		<ul class="film_data">
 				<li>
-					Название в оригинале: <span class="film_tag">${original_title}</span>
-					
+					${titleFilms} <span class="film_tag">${original_title}</span>					
 				</li>
 				<li>
-					Язык оригинала: <span class="film_tag">${original_language}</span>
+					${originalLanguage} <span class="film_tag">${original_language}</span>
 				</li>
 				<li>
-					Дата выпуска: <span class="film_tag">${release_date}</span>
-					
+					${releaseDate} <span class="film_tag">${release_date}</span>					
 				</li>
 				<li>
-					Рейтинг зрителей: <span class="film_tag">${vote_average}</span>
+					${rating} <span class="film_tag">${vote_average}</span>
 				</li>
 				<li>
-					Описание фильма: <span class="film_tag">${overview}</span>				
+					${overviewCount} <span class="film_tag">${overview}</span>				
 				</li>
 		</ul>	
 	</div>`;
@@ -213,4 +262,34 @@ function onClickEsc(e) {
 function hiddenModal() {
 	ref.modalWindow.classList.add('is-hidden');
 	window.removeEventListener('keydown', onClickEsc);
+}
+
+function onChange(e) {
+	e.preventDefault();
+	ref.gallery.innerHTML = '';
+	paramFetch.page = 1;
+	localizationPage(e.target.value);
+	paramFetch.countFoundItem ? onSearchClickBtn(e) : null;
+}
+
+function localizationPage(lang) {
+	paramFetch.lang = lang;
+	switch (lang) {
+		case 'en-US':
+			langIndex = 0;
+			break;
+		case 'ru-RU':
+			langIndex = 1;
+			break;
+		case 'pl-PL':
+			langIndex = 2;
+			break;
+		default:
+			langIndex = 0;
+			break;
+	}
+	ref.searchForm.searchQuery.placeholder = langInterface[langIndex].inputPlaceholder;
+	ref.searchForm.searchButton.textContent = langInterface[langIndex].buttonSearch;
+	ref.btnLoadmore.textContent = langInterface[langIndex].buttonLoadmore;
+	window.document.title = langInterface[langIndex].title;
 }
