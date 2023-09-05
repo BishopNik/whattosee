@@ -160,13 +160,20 @@ function markupImg(data) {
 		.map(
 			({
 				poster_path,
-				title,
-				original_language,
-				original_title,
-				overview,
-				release_date,
-				vote_average,
+				title = '---',
+				original_language = '---',
+				original_title = '---',
+				overview = '---',
+				release_date = 'xxxx-xx-xx',
+				vote_average = '--',
 			}) => {
+				poster_path = poster_path ? poster_path : '';
+				title = title ? title : '---';
+				original_language = original_language ? original_language : '--';
+				original_title = original_title ? original_title : '---';
+				overview = overview ? overview : '--';
+				release_date = release_date ? release_date : 'xxxx-xx-xx';
+				vote_average = vote_average ? vote_average : '--';
 				const path = poster_path
 					? `https://image.tmdb.org/t/p/w500${poster_path}?api_key=${apiKey}`
 					: 'https://cojo.ru/wp-content/uploads/2022/12/neoklassika-kinomuzyka.-neorchestra-1.webp';
@@ -216,11 +223,11 @@ function createFullDescription(e) {
 	const currentFilm = target.closest('li.film-card');
 	ref.modalWindow.classList.remove('is-hidden');
 	const {
-		original_language = 'xx',
-		original_title = 'Good film!',
-		overview = '',
+		original_language = '--',
+		original_title = '---',
+		overview = '---',
 		release_date = 'xxxx-xx-xx',
-		vote_average = '0',
+		vote_average = '--',
 	} = currentFilm.dataset;
 	const imgElement = currentFilm.querySelector('img');
 	const srcValue = imgElement
